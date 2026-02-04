@@ -48,7 +48,7 @@ class Layer:
 class World:
     """Procedurally generated world"""
     
-    def __init__(self, width=10, height=2000):
+    def __init__(self, width=5, height=2000):
         self.width = width
         self.height = height
         self.blocks = {}
@@ -154,8 +154,8 @@ class World:
                     
     def render(self, screen, player):
         """Render visible world"""
-        import time
-        block_size = 16
+        import time as time_module
+        block_size = 64  # Bigger blocks for easier visibility
         viewport_x = player.x - Config.SCREEN_WIDTH // (2 * block_size)
         viewport_y = player.y - Config.SCREEN_HEIGHT // (2 * block_size)
         
@@ -195,7 +195,7 @@ class World:
                 if player.last_mined_block:
                     bx, by, timestamp = player.last_mined_block
                     if x == bx and y == by:
-                        elapsed = time.time() - timestamp
+                        elapsed = time_module.time() - timestamp
                         if elapsed < 0.3:  # Flash for 300ms
                             flash_alpha = int(255 * (1 - elapsed / 0.3))
                             flash_color = tuple(min(255, c + flash_alpha) for c in color)

@@ -40,7 +40,8 @@ class Player:
         
     def mine(self, upgrades=None):
         """Perform manual mining action"""
-        current_time = time.time()
+        import time as time_module
+        current_time = time_module.time()
         if current_time - self.last_mine_time < self.mine_cooldown:
             return False
             
@@ -64,8 +65,7 @@ class Player:
             total_power *= self.crit_multiplier
             
         # Store block position for visual feedback
-        import time
-        self.last_mined_block = (target_x, target_y, time.time())
+        self.last_mined_block = (target_x, target_y, current_time)
         
         # Damage block
         if block.damage(total_power):
