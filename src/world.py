@@ -113,31 +113,40 @@ class World:
         """Generate resources for a block"""
         resources = {}
         
-        # Every block gives resources (primary resource type for layer)
+        # Every block gives resources - vary by position
         if layer.resources:
-            # Use first (most common) resource for this layer
-            resource_type, base_weight = layer.resources[0]
+            # Determine which resource type for this specific block
+            # Use high-frequency noise for more variation in narrow width
+            primary_noise = noise.pnoise2(
+                x * 0.8 + self.seed,  # Much higher frequency for 5-block width
+                y * 0.3,
+                octaves=3
+            )
             
-            # Resource veins using noise for variation
-            noise_val = noise.pnoise2(
-                x * 0.05 + self.seed + hash(resource_type) % 1000,
-                y * 0.05,
+            # Pick resource type based on noise and layer distribution
+            total_weight = sum(w for _, w in layer.resources)
+            threshold = (primary_noise + 1.0) / 2.0  # Normalize to 0-1
+            
+            accumulated = 0
+            selected_resource = layer.resources[0][0]
+            selected_weight = layer.resources[0][1]
+            
+            for resource_type, weight in layer.resources:
+                accumulated += weight / total_weight
+                if threshold <= accumulated:
+                    selected_resource = resource_type
+                    selected_weight = weight
+                    break
+            
+            # Amount variation using different noise
+            amount_noise = noise.pnoise2(
+                x * 0.5 + self.seed + hash(selected_resource) % 1000,
+                y * 0.2,
                 octaves=2
             )
             
-            # All blocks give at least base amount, bonus with good noise
-            amount = base_weight * (1 + max(0, noise_val))
-            resources[resource_type] = amount
-            
-            # Rare chance for bonus resources
-            for bonus_resource, bonus_weight in layer.resources[1:]:
-                bonus_noise = noise.pnoise2(
-                    x * 0.08 + self.seed + hash(bonus_resource) % 500,
-                    y * 0.08,
-                    octaves=2
-                )
-                if bonus_noise > 0.5:  # 25% chance for bonus
-                    resources[bonus_resource] = bonus_weight * (1 + bonus_noise)
+            amount = selected_weight * (1.0 + max(0, amount_noise))
+            resources[selected_resource] = amount
                 
         return resources
         
