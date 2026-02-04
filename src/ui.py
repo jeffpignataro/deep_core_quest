@@ -104,8 +104,8 @@ class UI:
     def _handle_upgrade_click(self, pos):
         """Handle click on upgrade list - returns True if click was in upgrade area"""
         upgrade_panel_x = Config.SCREEN_WIDTH // 2 + 20
-        upgrade_panel_y = 330  # Match _render_upgrade_panel
-        upgrade_height = 80
+        upgrade_panel_y = 360  # Match _render_upgrade_panel
+        upgrade_height = 100
         
         mouse_x, mouse_y = pos
         
@@ -183,7 +183,7 @@ class UI:
         panel_x = Config.SCREEN_WIDTH // 2 + 20
         panel_y = 160  # Below stats panel (20 + 120 + 20)
         panel_width = Config.SCREEN_WIDTH // 2 - 40
-        panel_height = 150
+        panel_height = 180
         
         pygame.draw.rect(screen, Config.UI_BG_COLOR, (panel_x, panel_y, panel_width, panel_height))
         pygame.draw.rect(screen, Config.UI_BORDER_COLOR, (panel_x, panel_y, panel_width, panel_height), 2)
@@ -193,7 +193,8 @@ class UI:
         screen.blit(title, (panel_x + 10, panel_y + 10))
         
         # Resources
-        y_offset = panel_y + 50
+        y_offset = panel_y + 80
+        original_panel_x = panel_x
         for i, (resource_type, amount) in enumerate(self.resources.resources.items()):
             color = Config.RESOURCE_COLORS.get(resource_type, Config.TEXT_COLOR)
             
@@ -209,17 +210,17 @@ class UI:
                 rate_surf = self.small_font.render(rate_text, True, color)
                 screen.blit(rate_surf, (panel_x + 220, y_offset + 5))
                 
-            y_offset += 50  # Double line height
+            y_offset += 65  # Increased line height for 48px font (was 50)
             if i == 2:  # Move to second column
-                y_offset = panel_y + 50
-                panel_x += 250
+                y_offset = panel_y + 80
+                panel_x += 300
                 
     def _render_upgrade_panel(self, screen):
         """Render upgrade list"""
         panel_x = Config.SCREEN_WIDTH // 2 + 20
-        panel_y = 330  # Below resources panel (160 + 150 + 20)
+        panel_y = 360  # Below resources panel (160 + 180 + 20)
         panel_width = Config.SCREEN_WIDTH // 2 - 40
-        panel_height = Config.SCREEN_HEIGHT - 350
+        panel_height = Config.SCREEN_HEIGHT - 380
         
         pygame.draw.rect(screen, Config.UI_BG_COLOR, (panel_x, panel_y, panel_width, panel_height))
         pygame.draw.rect(screen, Config.UI_BORDER_COLOR, (panel_x, panel_y, panel_width, panel_height), 2)
@@ -229,15 +230,15 @@ class UI:
         screen.blit(title, (panel_x + 10, panel_y + 10))
         
         # Upgrade list
-        y_offset = panel_y + 50
+        y_offset = panel_y + 80
         unlocked_upgrades = self.upgrades.get_unlocked_upgrades()
         
         for upgrade in unlocked_upgrades:
-            if y_offset > panel_y + panel_height - 80:
+            if y_offset > panel_y + panel_height - 100:
                 break
                 
             # Upgrade background
-            upgrade_rect = pygame.Rect(panel_x + 10, y_offset, panel_width - 20, 70)
+            upgrade_rect = pygame.Rect(panel_x + 10, y_offset, panel_width - 20, 90)
             can_afford = upgrade.can_afford(self.resources)
             bg_color = (60, 80, 60) if can_afford else Config.UI_BG_COLOR
             pygame.draw.rect(screen, bg_color, upgrade_rect)
@@ -252,7 +253,7 @@ class UI:
             
             # Description
             desc_surf = self.small_font.render(upgrade.description, True, Config.TEXT_COLOR)
-            screen.blit(desc_surf, (panel_x + 20, y_offset + 28))
+            screen.blit(desc_surf, (panel_x + 20, y_offset + 38))
             
             # Cost
             cost = upgrade.get_cost()
@@ -260,12 +261,12 @@ class UI:
                 cost_text = ", ".join([f"{amt:.0f} {res}" for res, amt in cost.items()])
                 cost_surf = self.small_font.render(f"Cost: {cost_text}", True, 
                                                   Config.HIGHLIGHT_COLOR if can_afford else (150, 150, 150))
-                screen.blit(cost_surf, (panel_x + 20, y_offset + 48))
+                screen.blit(cost_surf, (panel_x + 20, y_offset + 62))
             else:
                 max_surf = self.small_font.render("MAX LEVEL", True, Config.HIGHLIGHT_COLOR)
-                screen.blit(max_surf, (panel_x + 20, y_offset + 48))
+                screen.blit(max_surf, (panel_x + 20, y_offset + 62))
                 
-            y_offset += 80
+            y_offset += 100
             
     def _render_stats_panel(self, screen):
         """Render player stats"""
@@ -281,19 +282,27 @@ class UI:
         title = self.title_font.render("Stats", True, Config.HIGHLIGHT_COLOR)
         screen.blit(title, (panel_x + 10, panel_y + 10))
         
-        # Stats
-        stats = [
+        # Stats - displaying in two columns to fit better
+        stats_col1 = [
             f"Depth: {self.player.y}m (Max: {self.player.max_depth}m)",
-            f"Mining Power: {self.player.mining_power:.1f}",
+            f"Mining Power: {self.player.mining_power:.1f}"
+        ]
+        stats_col2 = [
             f"Mining Speed: {1/self.player.mine_cooldown:.1f} hits/s",
-            f"Prestige Level: {self.resources.prestige_level} ({self.resources.prestige_multiplier:.1f}x)"
+            f"Prestige Lv{self.resources.prestige_level} ({self.resources.prestige_multiplier:.1f}x)"
         ]
         
-        y_offset = panel_y + 45
-        for stat in stats:
+        y_offset = panel_y + 50
+        for stat in stats_col1:
             stat_surf = self.small_font.render(stat, True, Config.TEXT_COLOR)
             screen.blit(stat_surf, (panel_x + 20, y_offset))
-            y_offset += 40  # Double line height
+            y_offset += 50  # Increased line height for 36px font (was 40)
+            
+        y_offset = panel_y + 50
+        for stat in stats_col2:
+            stat_surf = self.small_font.render(stat, True, Config.TEXT_COLOR)
+            screen.blit(stat_surf, (panel_x + panel_width // 2 + 10, y_offset))
+            y_offset += 50
             
     def _render_notification(self, screen):
         """Render notification popup"""
