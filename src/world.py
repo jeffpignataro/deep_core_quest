@@ -113,18 +113,31 @@ class World:
         """Generate resources for a block"""
         resources = {}
         
-        # Resource veins using noise
-        for resource_type, weight in layer.resources:
+        # Every block gives resources (primary resource type for layer)
+        if layer.resources:
+            # Use first (most common) resource for this layer
+            resource_type, base_weight = layer.resources[0]
+            
+            # Resource veins using noise for variation
             noise_val = noise.pnoise2(
                 x * 0.05 + self.seed + hash(resource_type) % 1000,
                 y * 0.05,
                 octaves=2
             )
             
-            # Threshold for resource presence
-            if noise_val > 0.3:
-                amount = weight * (1 + noise_val)
-                resources[resource_type] = amount
+            # All blocks give at least base amount, bonus with good noise
+            amount = base_weight * (1 + max(0, noise_val))
+            resources[resource_type] = amount
+            
+            # Rare chance for bonus resources
+            for bonus_resource, bonus_weight in layer.resources[1:]:
+                bonus_noise = noise.pnoise2(
+                    x * 0.08 + self.seed + hash(bonus_resource) % 500,
+                    y * 0.08,
+                    octaves=2
+                )
+                if bonus_noise > 0.5:  # 25% chance for bonus
+                    resources[bonus_resource] = bonus_weight * (1 + bonus_noise)
                 
         return resources
         
@@ -155,7 +168,7 @@ class World:
     def render(self, screen, player):
         """Render visible world"""
         import time as time_module
-        block_size = 64  # Bigger blocks for easier visibility
+        block_size = 128  # Double size for 4K clarity
         viewport_x = player.x - Config.SCREEN_WIDTH // (2 * block_size)
         viewport_y = player.y - Config.SCREEN_HEIGHT // (2 * block_size)
         

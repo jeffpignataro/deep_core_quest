@@ -209,7 +209,7 @@ class UI:
                 rate_surf = self.small_font.render(rate_text, True, color)
                 screen.blit(rate_surf, (panel_x + 220, y_offset + 5))
                 
-            y_offset += 25
+            y_offset += 50  # Double line height
             if i == 2:  # Move to second column
                 y_offset = panel_y + 50
                 panel_x += 250
@@ -293,7 +293,7 @@ class UI:
         for stat in stats:
             stat_surf = self.small_font.render(stat, True, Config.TEXT_COLOR)
             screen.blit(stat_surf, (panel_x + 20, y_offset))
-            y_offset += 20
+            y_offset += 40  # Double line height
             
     def _render_notification(self, screen):
         """Render notification popup"""

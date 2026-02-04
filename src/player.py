@@ -83,13 +83,18 @@ class Player:
         
     def _collect_resources(self, block, is_crit=False):
         """Collect resources from mined block"""
+        if not block.resources:
+            print(f"Warning: Block at ({block.x}, {block.y}) has no resources!")
+            return
+            
         for resource_type, amount in block.resources.items():
             # Apply multipliers
             final_amount = amount
             
             if is_crit:
                 final_amount *= 1.5  # Bonus for crit
-                
+            
+            print(f"Collecting {final_amount:.1f} {resource_type} from block ({block.x}, {block.y})")
             self.resources.add(resource_type, final_amount)
             
     def update(self, dt):
