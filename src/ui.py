@@ -45,8 +45,7 @@ class UI:
         self.player = player
         self.world = world
         
-        # Fonts
-        pygame.font.init()
+        # Fonts (pygame.init() already called in main.py)
         self.font = pygame.font.Font(None, 24)
         self.title_font = pygame.font.Font(None, 32)
         self.small_font = pygame.font.Font(None, 18)
