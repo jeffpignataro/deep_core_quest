@@ -204,15 +204,18 @@ class World:
                     color = tuple(int(c * damage_ratio) for c in color)
                 
                 # Flash effect for recently clicked blocks
-                flash_alpha = 0
                 if player.last_mined_block:
                     bx, by, timestamp = player.last_mined_block
                     if x == bx and y == by:
                         elapsed = time_module.time() - timestamp
-                        if elapsed < 0.3:  # Flash for 300ms
-                            flash_alpha = int(255 * (1 - elapsed / 0.3))
-                            flash_color = tuple(min(255, c + flash_alpha) for c in color)
-                            color = flash_color
+                        if elapsed < 0.5:  # Flash for 500ms
+                            # White flash that fades
+                            flash_intensity = 1.0 - (elapsed / 0.5)
+                            color = (
+                                int(color[0] * (1 - flash_intensity) + 255 * flash_intensity),
+                                int(color[1] * (1 - flash_intensity) + 255 * flash_intensity),
+                                int(color[2] * (1 - flash_intensity) + 255 * flash_intensity)
+                            )
                     
                 pygame.draw.rect(screen, color, (screen_x, screen_y, block_size, block_size))
                 pygame.draw.rect(screen, (0, 0, 0), (screen_x, screen_y, block_size, block_size), 1)
