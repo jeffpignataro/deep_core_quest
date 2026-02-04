@@ -50,9 +50,9 @@ class UI:
         # Fonts - ensure font module is initialized
         if not pgfont.get_init():
             pgfont.init()
-        self.font = pgfont.Font(None, 24)
-        self.title_font = pgfont.Font(None, 32)
-        self.small_font = pgfont.Font(None, 18)
+        self.font = pgfont.Font(None, 72)
+        self.title_font = pgfont.Font(None, 96)
+        self.small_font = pgfont.Font(None, 54)
         
         # UI state
         self.selected_upgrade = None
