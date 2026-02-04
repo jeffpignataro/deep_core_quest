@@ -47,12 +47,12 @@ class UI:
         self.player = player
         self.world = world
         
-        # Fonts - ensure font module is initialized
+        # Fonts - ensure font module is initialized (scaled for 4K)
         if not pgfont.get_init():
             pgfont.init()
-        self.font = pgfont.Font(None, 72)
-        self.title_font = pgfont.Font(None, 96)
-        self.small_font = pgfont.Font(None, 54)
+        self.font = pgfont.Font(None, 48)
+        self.title_font = pgfont.Font(None, 64)
+        self.small_font = pgfont.Font(None, 36)
         
         # UI state
         self.selected_upgrade = None

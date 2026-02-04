@@ -5,9 +5,9 @@ Game configuration and constants
 class Config:
     """Global game configuration"""
     
-    # Display
-    SCREEN_WIDTH = 1920
-    SCREEN_HEIGHT = 1080
+    # Display (4K resolution)
+    SCREEN_WIDTH = 3840
+    SCREEN_HEIGHT = 2160
     FPS = 60
     
     # Colors
