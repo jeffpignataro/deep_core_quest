@@ -6,8 +6,8 @@ class Config:
     """Global game configuration"""
     
     # Display
-    SCREEN_WIDTH = 1280
-    SCREEN_HEIGHT = 720
+    SCREEN_WIDTH = 1920
+    SCREEN_HEIGHT = 1080
     FPS = 60
     
     # Colors

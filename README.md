@@ -41,22 +41,60 @@ An incremental mining game where you dig deep into a procedurally generated unde
 
 ## 📋 Requirements
 
-- Python 3.8+
-- Pygame 2.5.0+
-- noise 1.2.2+ (for procedural generation)
+### Python Version
+- **Python 3.12.x recommended** (tested and stable)
+- Python 3.10+ supported
+- ⚠️ **Python 3.14+** may have compatibility issues with pygame (use 3.12 if you encounter font errors)
+
+### System Dependencies
+- **Linux/Ubuntu**: `sudo apt-get install python3-dev gcc-12 libsdl2-dev`
+- **macOS**: `brew install python@3.12 sdl2`
+- **Windows**: Python 3.12 installer from python.org
+
+### Python Packages
+- pygame >= 2.5.0
+- noise >= 1.2.2
 
 ## 🚀 Installation
 
+### Quick Start (Recommended)
 ```bash
 # Clone the repository
 git clone https://github.com/jeffpignataro/deep_core_quest.git
 cd deep_core_quest
+
+# Create virtual environment with Python 3.12
+python3.12 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 # Install dependencies
 pip install -r requirements.txt
 
 # Run the game
 python main.py
+```
+
+### Troubleshooting
+
+**Font Import Error (Python 3.14+)**
+```bash
+# Use Python 3.12 instead
+rm -rf venv
+python3.12 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+**SDL2 Missing (Linux)**
+```bash
+sudo apt-get update
+sudo apt-get install python3-dev gcc-12 libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev
+```
+
+**Performance Warning (AVX2)**
+```bash
+# Optional: Rebuild pygame with AVX2 support
+PYGAME_DETECT_AVX2=1 pip install --no-binary :all: pygame
 ```
 
 ## 🎯 How to Play
