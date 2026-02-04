@@ -113,7 +113,26 @@ class World:
         """Generate resources for a block"""
         resources = {}
         
-        # Every block gives resources - vary by position
+        # Dirt percentage: 90% at surface (depth 0), 40% at depth 500+
+        depth = y
+        if depth < 500:
+            dirt_chance = 0.9 - (depth / 500) * 0.5  # Linear scale from 90% to 40%
+        else:
+            dirt_chance = 0.4
+            
+        # Check if this block is dirt (no resources)
+        dirt_noise = noise.pnoise2(
+            x * 1.2 + self.seed + 9999,
+            y * 0.4,
+            octaves=2
+        )
+        dirt_threshold = (dirt_noise + 1.0) / 2.0  # Normalize to 0-1
+        
+        if dirt_threshold < dirt_chance:
+            # Dirt block - no resources
+            return {}
+        
+        # Resource block - vary by position
         if layer.resources:
             # Determine which resource type for this specific block
             # Use high-frequency noise for more variation in narrow width
@@ -176,6 +195,7 @@ class World:
                     
     def render(self, screen, player):
         """Render visible world"""
+        import time
         block_size = 128  # Double size for 4K clarity
         viewport_x = player.x - Config.SCREEN_WIDTH // (2 * block_size)
         viewport_y = player.y - Config.SCREEN_HEIGHT // (2 * block_size)
@@ -210,6 +230,18 @@ class World:
                     # Show damage
                     damage_ratio = block.health / block.hardness
                     color = tuple(int(c * damage_ratio) for c in color)
+                
+                # Click feedback - white flash on recently clicked block
+                if player.last_clicked_block:
+                    clicked_x, clicked_y, click_time = player.last_clicked_block
+                    if x == clicked_x and y == clicked_y:
+                        elapsed = time.time() - click_time
+                        if elapsed < 0.2:  # Short 200ms flash
+                            flash_intensity = 1.0 - (elapsed / 0.2)
+                            color = tuple(
+                                int(c + (255 - c) * flash_intensity * 0.5)  # 50% flash intensity
+                                for c in color
+                            )
                     
                 pygame.draw.rect(screen, color, (screen_x, screen_y, block_size, block_size))
                 pygame.draw.rect(screen, (0, 0, 0), (screen_x, screen_y, block_size, block_size), 1)

@@ -34,6 +34,9 @@ class Player:
         self.last_mine_time = 0
         self.mine_cooldown = 0.5  # Seconds between manual mines
         
+        # Click feedback
+        self.last_clicked_block = None  # (x, y, timestamp)
+        
     def mine(self, upgrades=None):
         """Perform manual mining action"""
         import time as time_module
@@ -59,6 +62,10 @@ class Player:
         is_crit = random.random() < self.crit_chance
         if is_crit:
             total_power *= self.crit_multiplier
+        
+        # Store clicked block for visual feedback
+        import time
+        self.last_clicked_block = (target_x, target_y, time.time())
         
         # Damage block
         if block.damage(total_power):
