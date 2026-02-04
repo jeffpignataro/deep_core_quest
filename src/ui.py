@@ -3,6 +3,8 @@ User interface rendering and interaction
 """
 
 import pygame
+# Import font after pygame to avoid circular import issues
+from pygame import font as pgfont
 from .config import Config
 
 class Button:
@@ -45,10 +47,12 @@ class UI:
         self.player = player
         self.world = world
         
-        # Fonts (pygame.init() already called in main.py)
-        self.font = pygame.font.Font(None, 24)
-        self.title_font = pygame.font.Font(None, 32)
-        self.small_font = pygame.font.Font(None, 18)
+        # Fonts - ensure font module is initialized
+        if not pgfont.get_init():
+            pgfont.init()
+        self.font = pgfont.Font(None, 24)
+        self.title_font = pgfont.Font(None, 32)
+        self.small_font = pgfont.Font(None, 18)
         
         # UI state
         self.selected_upgrade = None
