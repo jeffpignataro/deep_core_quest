@@ -61,12 +61,15 @@ class Game:
                     self.save_game()
                     print("Game saved!")
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                self.ui.handle_click(event.pos, event.button)
-                # Manual mining click
-                if event.button == 1:  # Left click
+                # Let UI handle the click first
+                ui_handled = self.ui.handle_click(event.pos, event.button)
+                
+                # Manual mining click - only if UI didn't handle it
+                if not ui_handled and event.button == 1:  # Left click
                     mouse_pos = pygame.mouse.get_pos()
+                    # Only mine if clicking on the world (left half of screen)
                     if mouse_pos[0] < Config.SCREEN_WIDTH // 2:
-                        self.player.mine()
+                        self.player.mine(self.upgrades)
                         
     def update(self, dt):
         """Update game state"""

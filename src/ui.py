@@ -74,26 +74,46 @@ class UI:
         )
         
     def handle_click(self, pos, button):
-        """Handle mouse click"""
+        """Handle mouse click - returns True if UI handled the click"""
         if button == 1:  # Left click
+            # Check if click is on stats panel (top-left overlay)
+            if self._is_on_stats_panel(pos):
+                return True  # Consume click, don't mine through UI
+            
             # Check upgrade list
-            self._handle_upgrade_click(pos)
+            if self._handle_upgrade_click(pos):
+                return True
             
             # Check buttons
-            self.prestige_button.handle_click(pos)
+            if self.prestige_button.handle_click(pos):
+                return True
+                
+        return False
+    
+    def _is_on_stats_panel(self, pos):
+        """Check if position is on the stats panel"""
+        panel_x = 20
+        panel_y = 20
+        panel_width = Config.SCREEN_WIDTH // 2 - 40
+        panel_height = 120
+        
+        mouse_x, mouse_y = pos
+        return (panel_x <= mouse_x <= panel_x + panel_width and 
+                panel_y <= mouse_y <= panel_y + panel_height)
             
     def _handle_upgrade_click(self, pos):
-        """Handle click on upgrade list"""
+        """Handle click on upgrade list - returns True if click was in upgrade area"""
         upgrade_panel_x = Config.SCREEN_WIDTH // 2 + 20
         upgrade_panel_y = 60
         upgrade_height = 80
         
         mouse_x, mouse_y = pos
         
+        # Check if click is in upgrade panel bounds
         if mouse_x < upgrade_panel_x or mouse_x > Config.SCREEN_WIDTH - 20:
-            return
+            return False
         if mouse_y < upgrade_panel_y:
-            return
+            return False
             
         # Determine which upgrade was clicked
         index = (mouse_y - upgrade_panel_y + self.upgrade_scroll) // upgrade_height
@@ -105,6 +125,14 @@ class UI:
                 if self.upgrades.purchase_upgrade(upgrade.id):
                     self.player.apply_upgrades(self.upgrades)
                     self.show_notification(f"Purchased: {upgrade.name}")
+                    return True
+            else:
+                # Click was on an upgrade but couldn't afford - still counts as handled
+                self.show_notification(f"Cannot afford: {upgrade.name}")
+                return True
+                
+        # Click was in upgrade panel area
+        return True
                     
     def _handle_prestige(self):
         """Handle prestige button click"""
