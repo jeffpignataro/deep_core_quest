@@ -34,10 +34,6 @@ class Player:
         self.last_mine_time = 0
         self.mine_cooldown = 0.5  # Seconds between manual mines
         
-        # Visual feedback
-        self.last_mined_block = None  # (x, y, timestamp)
-        self.particle_effects = []  # List of active particles
-        
     def mine(self, upgrades=None):
         """Perform manual mining action"""
         import time as time_module
@@ -63,9 +59,6 @@ class Player:
         is_crit = random.random() < self.crit_chance
         if is_crit:
             total_power *= self.crit_multiplier
-            
-        # Store block position for visual feedback
-        self.last_mined_block = (target_x, target_y, current_time)
         
         # Damage block
         if block.damage(total_power):

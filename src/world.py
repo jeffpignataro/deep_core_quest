@@ -167,20 +167,9 @@ class World:
                     
     def render(self, screen, player):
         """Render visible world"""
-        import time as time_module
         block_size = 128  # Double size for 4K clarity
         viewport_x = player.x - Config.SCREEN_WIDTH // (2 * block_size)
         viewport_y = player.y - Config.SCREEN_HEIGHT // (2 * block_size)
-        
-        # Check if we have a valid flash block and if flash is still active
-        flash_block_x, flash_block_y = None, None
-        flash_intensity = 0.0
-        if player.last_mined_block:
-            bx, by, timestamp = player.last_mined_block
-            elapsed = time_module.time() - timestamp
-            if elapsed < 0.5:  # Flash for 500ms
-                flash_block_x, flash_block_y = bx, by
-                flash_intensity = 1.0 - (elapsed / 0.5)
         
         for y in range(int(viewport_y), int(viewport_y + Config.SCREEN_HEIGHT // block_size + 2)):
             for x in range(int(viewport_x), int(viewport_x + Config.SCREEN_WIDTH // block_size + 2)):
@@ -212,15 +201,6 @@ class World:
                     # Show damage
                     damage_ratio = block.health / block.hardness
                     color = tuple(int(c * damage_ratio) for c in color)
-                
-                # Apply flash effect ONLY to the specific clicked block
-                if flash_block_x == x and flash_block_y == y:
-                    # White flash that fades
-                    color = (
-                        int(color[0] * (1 - flash_intensity) + 255 * flash_intensity),
-                        int(color[1] * (1 - flash_intensity) + 255 * flash_intensity),
-                        int(color[2] * (1 - flash_intensity) + 255 * flash_intensity)
-                    )
                     
                 pygame.draw.rect(screen, color, (screen_x, screen_y, block_size, block_size))
                 pygame.draw.rect(screen, (0, 0, 0), (screen_x, screen_y, block_size, block_size), 1)
