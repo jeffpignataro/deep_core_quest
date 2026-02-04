@@ -92,7 +92,7 @@ class UI:
     
     def _is_on_stats_panel(self, pos):
         """Check if position is on the stats panel"""
-        panel_x = 20
+        panel_x = Config.SCREEN_WIDTH // 2 + 20
         panel_y = 20
         panel_width = Config.SCREEN_WIDTH // 2 - 40
         panel_height = 120
@@ -104,7 +104,7 @@ class UI:
     def _handle_upgrade_click(self, pos):
         """Handle click on upgrade list - returns True if click was in upgrade area"""
         upgrade_panel_x = Config.SCREEN_WIDTH // 2 + 20
-        upgrade_panel_y = 60
+        upgrade_panel_y = 330  # Match _render_upgrade_panel
         upgrade_height = 80
         
         mouse_x, mouse_y = pos
@@ -181,7 +181,7 @@ class UI:
     def _render_resource_panel(self, screen):
         """Render resource display"""
         panel_x = Config.SCREEN_WIDTH // 2 + 20
-        panel_y = 20
+        panel_y = 160  # Below stats panel (20 + 120 + 20)
         panel_width = Config.SCREEN_WIDTH // 2 - 40
         panel_height = 150
         
@@ -217,9 +217,9 @@ class UI:
     def _render_upgrade_panel(self, screen):
         """Render upgrade list"""
         panel_x = Config.SCREEN_WIDTH // 2 + 20
-        panel_y = 180
+        panel_y = 330  # Below resources panel (160 + 150 + 20)
         panel_width = Config.SCREEN_WIDTH // 2 - 40
-        panel_height = Config.SCREEN_HEIGHT - 200
+        panel_height = Config.SCREEN_HEIGHT - 350
         
         pygame.draw.rect(screen, Config.UI_BG_COLOR, (panel_x, panel_y, panel_width, panel_height))
         pygame.draw.rect(screen, Config.UI_BORDER_COLOR, (panel_x, panel_y, panel_width, panel_height), 2)
@@ -269,7 +269,7 @@ class UI:
             
     def _render_stats_panel(self, screen):
         """Render player stats"""
-        panel_x = 20
+        panel_x = Config.SCREEN_WIDTH // 2 + 20
         panel_y = 20
         panel_width = Config.SCREEN_WIDTH // 2 - 40
         panel_height = 120

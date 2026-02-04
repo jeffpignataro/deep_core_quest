@@ -48,7 +48,7 @@ class Layer:
 class World:
     """Procedurally generated world"""
     
-    def __init__(self, width=50, height=2000):
+    def __init__(self, width=10, height=2000):
         self.width = width
         self.height = height
         self.blocks = {}
@@ -154,6 +154,7 @@ class World:
                     
     def render(self, screen, player):
         """Render visible world"""
+        import time
         block_size = 16
         viewport_x = player.x - Config.SCREEN_WIDTH // (2 * block_size)
         viewport_y = player.y - Config.SCREEN_HEIGHT // (2 * block_size)
@@ -188,6 +189,17 @@ class World:
                     # Show damage
                     damage_ratio = block.health / block.hardness
                     color = tuple(int(c * damage_ratio) for c in color)
+                
+                # Flash effect for recently clicked blocks
+                flash_alpha = 0
+                if player.last_mined_block:
+                    bx, by, timestamp = player.last_mined_block
+                    if x == bx and y == by:
+                        elapsed = time.time() - timestamp
+                        if elapsed < 0.3:  # Flash for 300ms
+                            flash_alpha = int(255 * (1 - elapsed / 0.3))
+                            flash_color = tuple(min(255, c + flash_alpha) for c in color)
+                            color = flash_color
                     
                 pygame.draw.rect(screen, color, (screen_x, screen_y, block_size, block_size))
                 pygame.draw.rect(screen, (0, 0, 0), (screen_x, screen_y, block_size, block_size), 1)
